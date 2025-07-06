@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工业视觉大模型智能平台 - 原型展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .page-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .page-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-subtitle {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .page-content {
+            padding: 1.5rem;
+            height: auto;
+            overflow-y: auto;
+        }
+
+        /* Task Creation Page Styles */
+        .task-creation-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr 200px;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .chat-area {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #f8fafc;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            display: flex;
+            margin-bottom: 0.75rem;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+        }
+
+        .message-bubble.user {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .message-bubble.system {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-upload-area:hover {
+            border-color: #3b82f6;
+        }
+
+        .template-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .template-card:hover {
+            background-color: #f1f5f9;
+            border-color: #3b82f6;
+        }
+
+        .template-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .template-card p {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Code Generation Page Styles */
+        .code-generation-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr 150px;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .algorithm-library {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .algorithm-category {
+            margin-bottom: 1rem;
+        }
+
+        .algorithm-category h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .algorithm-item {
+            font-size: 0.75rem;
+            color: #64748b;
+            padding: 0.25rem 0;
+            cursor: pointer;
+        }
+
+        .algorithm-item:hover {
+            color: #3b82f6;
+        }
+
+        .code-editor-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            background-color: white;
+            color: #3b82f6;
+            border-bottom-color: white;
+        }
+
+        .tab-button:first-child {
+            border-top-left-radius: 6px;
+        }
+
+        .tab-button:last-child {
+            border-top-right-radius: 6px;
+        }
+
+        .flowchart-area {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            background-color: #f8fafc;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flowchart-node {
+            position: absolute;
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .flowchart-arrow {
+            position: absolute;
+            height: 2px;
+            background-color: #3b82f6;
+        }
+
+        .flowchart-arrow::after {
+            content: "▶";
+            position: absolute;
+            right: -8px;
+            top: -7px;
+            color: #3b82f6;
+            font-size: 0.75rem;
+        }
+
+        .code-editor {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: "Courier New", monospace;
+            font-size: 0.75rem;
+            background-color: #f8fafc;
+            white-space: pre-wrap;
+            overflow: auto;
+            display: none;
+        }
+
+        .code-editor.active {
+            display: block;
+        }
+
+        .param-panel {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .param-item {
+            margin-bottom: 1rem;
+        }
+
+        .param-item label {
+            font-size: 0.75rem;
+            color: #374151;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .param-slider {
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+
+        /* Validation Page Styles */
+        .validation-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .image-display-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .image-placeholder {
+            background-color: #f1f5f9;
+            height: 120px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .stat-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .suggestion-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-card:hover {
+            background-color: #f8fafc;
+        }
+
+        .suggestion-card h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .suggestion-card p {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #2563eb;
+        }
+
+        .button-outline {
+            background-color: transparent;
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+
+        .button-outline:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: inline-block;
+        }
+
+        .running {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .feedback-stars {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 工业视觉大模型智能平台</h1>
+        <p>图像+自然语言 → 自动生成视觉算子组合</p>
+    </div>
+
+    <div class="container">
+        <div class="grid-container">
+            <!-- Page 1: Task Creation Page -->
+            <div class="page-card">
+                <div class="page-header">
+                    <div class="page-title">
+                        <span class="icon">🎯</span>
+                        智能任务创建页
+                    </div>
+                    <div class="page-subtitle">通过自然语言描述检测需求，选择预设模板，上传图像进行ROI标注</div>
+                </div>
+                <div class="page-content">
+                    <div class="task-creation-layout">
+                        <!-- 任务描述区 -->
+                        <div>
+                            <h4 style="margin-bottom: 1rem; font-weight: 600;">任务描述区</h4>
+                            <div class="chat-area scrollbar-thin">
+                                <div class="chat-message">
+                                    <div class="message-bubble system">
+                                        您好！我是工业视觉AI助手。请描述您的检测需求，我将为您生成相应的视觉算子组合。
+                                    </div>
+                                </div>
+                                <div class="chat-message user">
+                                    <div class="message-bubble user">
+                                        我需要检测金属表面的划伤，最小尺寸0.2mm
+                                    </div>
+                                </div>
+                                <div class="chat-message">
+                                    <div class="message-bubble system">
+                                        我理解您需要检测划伤缺陷。请问：1) 最小检测尺寸是多少？2) 是否需要忽略某些区域（如反光区域）？3) 对检测精度有什么要求？
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <input type="text" class="input" placeholder="描述您的检测需求..." style="flex: 1;">
+                                <button class="button">发送</button>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <h5 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">参数预设</h5>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <label style="font-size: 0.75rem; color: #64748b;">输出语言:</label>
+                                    <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+                                        <button class="button-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Halcon</button>
+                                        <button class="button-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Python</button>
+                                        <button class="button-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">C++</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="button" style="width: 100%; margin-top: 1rem;">⚡ 生成算子组合</button>
+                        </div>
+
+                        <!-- 图像操作区 -->
+                        <div>
+                            <h4 style="margin-bottom: 1rem; font-weight: 600;">图像操作区</h4>
+                            <div class="image-upload-area">
+                                <span class="icon">📁</span>
+                                <span>点击上传图像或拖拽文件到此处</span>
+                                <span style="font-size: 0.75rem; color: #94a3b8;">支持 JPG、PNG、BMP 格式</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <h5 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">ROI标注工具</h5>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="button-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">矩形选择</button>
+                                    <button class="button-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">多边形</button>
+                                    <button class="button-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">清除标注</button>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <h5 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">图像信息</h5>
+                                <div style="font-size: 0.75rem; color: #64748b;">
+                                    <p>分辨率: 1920×1080</p>
+                                    <p>格式: JPEG</p>
+                                    <p>大小: 2.3 MB</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 模板库 -->
+                        <div>
+                            <h4 style="margin-bottom: 1rem; font-weight: 600;">模板库</h4>
+                            <input type="text" class="input" placeholder="搜索模板..." style="margin-bottom: 1rem; font-size: 0.75rem;">
+                            <div class="scrollbar-thin" style="height: 300px; overflow-y: auto;">
+                                <div class="template-card">
+                                    <h4>🎯 金属划伤检测</h4>
+                                    <p>检测金属表面的划痕、刮伤等缺陷</p>
+                                    <div style="margin-top: 0.5rem;">
+                                        <span class="badge">缺陷检测</span>
+                                        <span style="font-size: 0.7rem; color: #64748b; float: right;">★4.8 (1247)</span>
+                                    </div>
+                                </div>
+                                <div class="template-card">
+                                    <h4>📏 尺寸测量</h4>
+                                    <p>精确测量零件的长度、宽度、直径等尺寸</p>
+                                    <div style="margin-top: 0.5rem;">
+                                        <span class="badge">测量分析</span>
+                                        <span style="font-size: 0.7rem; color: #64748b; float: right;">★4.9 (892)</span>
+                                    </div>
+                                </div>
+                                <div class="template-card">
+                                    <h4>👁️ 表面质量检测</h4>
+                                    <p>检测表面粗糙度、色差、污渍等质量问题</p>
+                                    <div style="margin-top: 0.5rem;">
+                                        <span class="badge">质量检测</span>
+                                        <span style="font-size: 0.7rem; color: #64748b; float: right;">★4.7 (634)</span>
+                                    </div>
+                                </div>
+                                <div class="template-card">
+                                    <h4>🎯 零件定位</h4>
+                                    <p>精确定位零件位置和角度</p>
+                                    <div style="margin-top: 0.5rem;">
+                                        <span class="badge">定位识别</span>
+                                        <span style="font-size: 0.7rem; color: #64748b; float: right;">★4.8 (1156)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 2: Code Generation Page -->
+            <div class="page-card">
+                <div class="page-header">
+                    <div class="page-title">
+                        <span class="icon">⚙️</span>
+                        代码生成结果页
+                    </div>
+                    <div class="page-subtitle">基于需求自动生成Halcon/OpenCV算子组合代码，支持流程图和代码双模式</div>
+                </div>
+                <div class="page-content">
+                    <div class="code-generation-layout">
+                        <!-- 算子库 -->
+                        <div class="algorithm-library scrollbar-thin">
+                            <h4 style="margin-bottom: 1rem; font-weight: 600;">算子库</h4>
+                            <input type="text" class="input" placeholder="搜索算子..." style="margin-bottom: 1rem; font-size: 0.75rem;">
+                            
+                            <div class="algorithm-category">
+                                <h4>图像预处理</h4>
+                                <div class="algorithm-item">📁 read_image</div>
+                                <div class="algorithm-item">🎨 rgb1_to_gray</div>
+                                <div class="algorithm-item">🔧 median_image</div>
+                                <div class="algorithm-item">🌊 gauss_filter</div>
+                            </div>
+                            
+                            <div class="algorithm-category">
+                                <h4>特征提取</h4>
+                                <div class="algorithm-item">✂️ threshold</div>
+                                <div class="algorithm-item">📏 edges_sub_pix</div>
+                                <div class="algorithm-item">🔗 connection</div>
+                                <div class="algorithm-item">🔍 select_shape</div>
+                            </div>
+                            
+                            <div class="algorithm-category">
+                                <h4>测量分析</h4>
+                                <div class="algorithm-item">📐 area_center</div>
+                                <div class="algorithm-item">📦 smallest_rectangle2</div>
+                                <div class="algorithm-item">📏 distance_pp</div>
+                                <div class="algorithm-item">📐 angle_lx</div>
+                            </div>
+                        </div>
+
+                        <!-- 主工作区 -->
+                        <div class="code-editor-area">
+                            <div class="tab-buttons">
+                                <div class="tab-button active" onclick="switchTab(\'flowchart\')">🔄 流程图模式</div>
+                                <div class="tab-button" onclick="switchTab(\'code\')">💻 代码编辑模式</div>
+                            </div>
+                            
+                            <div id="flowchart-view" class="flowchart-area">
+                                <!-- 流程图节点 -->
+                                <div class="flowchart-node" style="left: 20px; top: 50px;">read_image<br><small>输入</small></div>
+                                <div class="flowchart-node" style="left: 140px; top: 50px;">rgb1_to_gray<br><small>预处理</small></div>
+                                <div class="flowchart-node" style="left: 280px; top: 50px;">median_image<br><small>滤波</small></div>
+                                <div class="flowchart-node" style="left: 420px; top: 50px;">threshold<br><small>分割</small></div>
+                                
+                                <!-- 连接箭头 -->
+                                <div class="flowchart-arrow" style="left: 100px; top: 65px; width: 40px;"></div>
+                                <div class="flowchart-arrow" style="left: 240px; top: 65px; width: 40px;"></div>
+                                <div class="flowchart-arrow" style="left: 380px; top: 65px; width: 40px;"></div>
+                            </div>
+                            
+                            <div id="code-view" class="code-editor">* 工业视觉检测算法 - 自动生成
+* 任务描述: 金属表面划伤检测
+* 生成时间: 2025/06/29
+
+* 读取输入图像
+read_image (Image, \'input.jpg\')
+
+* 转换为灰度图像
+rgb1_to_gray (Image, GrayImage)
+
+* 中值滤波去噪
+median_image (GrayImage, FilteredImage, \'circle\', 3)
+
+* 阈值分割
+threshold (FilteredImage, Region, 0, 128)
+
+* 连通域分析
+connection (Region, ConnectedRegions)
+
+* 形状筛选 - 面积过滤
+select_shape (ConnectedRegions, SelectedRegions, \'area\', \'and\', 100, 10000)
+
+* 计算缺陷特征
+area_center (SelectedRegions, Area, Row, Column)
+smallest_rectangle2 (SelectedRegions, Row1, Column1, Row2, Column2, Phi)
+
+* 输出结果
+count_obj (SelectedRegions, Number)
+if (Number > 0)
+    disp_message (WindowHandle, \'检测到 \' + Number + \' 个缺陷\', \'window\', 12, 12, \'black\', \'true\')
+else
+    disp_message (WindowHandle, \'产品合格\', \'window\', 12, 12, \'green\', \'true\')
+endif</div>
+                            
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="button">▶️ 运行验证</button>
+                                <button class="button-outline">💾 导出工程</button>
+                            </div>
+                        </div>
+
+                        <!-- 参数面板 -->
+                        <div class="param-panel">
+                            <h4 style="margin-bottom: 1rem; font-weight: 600;">参数面板</h4>
+                            
+                            <div class="param-item">
+                                <label>置信度阈值:</label>
+                                <input type="range" min="0" max="100" value="80" class="param-slider">
+                                <div style="text-align: center; font-size: 0.75rem; color: #64748b;">80%</div>
+                            </div>
+                            
+                            <div class="param-item">
+                                <label>检测灵敏度:</label>
+                                <input type="range" min="1" max="10" value="5" class="param-slider">
+                                <div style="text-align: center; font-size: 0.75rem; color: #64748b;">中等</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 3: Validation Page -->
+            <div class="page-card">
+                <div class="page-header">
+                    <div class="page-title">
+                        <span class="icon">🧪</span>
+                        实时验证沙盒页
+                    </div>
+                    <div class="page-subtitle">提供验证环境和智能优化建议，支持多轮对话调优</div>
+                </div>
+                <div class="page-content">
+                    <div class="validation-layout">
+                        <!-- 图像验证区 -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 style="font-weight: 600;">实时验证沙盒</h4>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <span class="badge">版本 1.0</span>
+                                    <button class="button" id="run-btn" onclick="runValidation()">▶️ 运行验证</button>
+                                </div>
+                            </div>
+                            
+                            <div class="image-display-grid">
+                                <div class="image-card">
+                                    <h5 style="font-weight: 600; margin-bottom: 0.5rem;">原始图像</h5>
+                                    <div class="image-placeholder">
+                                        📷 原始图像预览<br>
+                                        <small>1920×1080</small>
+                                    </div>
+                                </div>
+                                <div class="image-card">
+                                    <h5 style="font-weight: 600; margin-bottom: 0.5rem;">检测结果</h5>
+                                    <div class="image-placeholder" id="result-display">
+                                        🔍 检测结果预览<br>
+                                        <small>等待运行</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <h4>性能统计</h4>
+                                    <div class="stat-item"><span>处理时间:</span><span id="processing-time">-</span></div>
+                                    <div class="stat-item"><span>内存使用:</span><span id="memory-usage">-</span></div>
+                                    <div class="stat-item"><span>准确率:</span><span id="accuracy" style="color: #10b981;">-</span></div>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>检测详情</h4>
+                                    <div style="font-size: 0.75rem; color: #64748b;" id="detection-details">
+                                        点击检测区域查看详情
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>结果反馈</h4>
+                                    <div class="feedback-stars" style="margin-bottom: 0.5rem;">
+                                        ★★★★☆
+                                    </div>
+                                    <div style="font-size: 0.75rem;">
+                                        <label><input type="checkbox"> 误检</label><br>
+                                        <label><input type="checkbox"> 漏检</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 对话调优面板 -->
+                        <div>
+                            <h4 style="margin-bottom: 1rem; font-weight: 600;">智能调优</h4>
+                            
+                            <div class="chat-area scrollbar-thin" style="height: 200px; margin-bottom: 1rem;">
+                                <div class="chat-message">
+                                    <div class="message-bubble system">
+                                        验证环境已准备就绪。点击"运行验证"开始测试算法效果。
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <h5 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">智能建议</h5>
+                                <div class="suggestion-card" onclick="applySuggestion(\'提高灵敏度\')">
+                                    <h5>📈 提高灵敏度</h5>
+                                    <p>降低阈值以检测更小的缺陷</p>
+                                </div>
+                                <div class="suggestion-card" onclick="applySuggestion(\'降低误报率\')">
+                                    <h5>📉 降低误报率</h5>
+                                    <p>增加形态学滤波减少噪声</p>
+                                </div>
+                                <div class="suggestion-card" onclick="applySuggestion(\'优化光照处理\')">
+                                    <h5>⚡ 优化光照处理</h5>
+                                    <p>添加同态滤波处理不均匀光照</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" class="input" placeholder="描述优化需求..." style="flex: 1; font-size: 0.75rem;">
+                                <button class="button" style="padding: 0.5rem;">发送</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            const flowchartView = document.getElementById(\'flowchart-view\');
+            const codeView = document.getElementById(\'code-view\');
+            const tabButtons = document.querySelectorAll(\'.tab-button\');
+            
+            tabButtons.forEach(btn => btn.classList.remove(\'active\'));
+            
+            if (tabName === \'flowchart\') {
+                flowchartView.style.display = \'block\';
+                codeView.style.display = \'none\';
+                tabButtons[0].classList.add(\'active\');
+            } else {
+                flowchartView.style.display = \'none\';
+                codeView.style.display = \'block\';
+                tabButtons[1].classList.add(\'active\');
+            }
+        }
+
+        function runValidation() {
+            const runBtn = document.getElementById(\'run-btn\');
+            const resultDisplay = document.getElementById(\'result-display\');
+            const processingTime = document.getElementById(\'processing-time\');
+            const memoryUsage = document.getElementById(\'memory-usage\');
+            const accuracy = document.getElementById(\'accuracy\');
+            const detectionDetails = document.getElementById(\'detection-details\');
+            
+            runBtn.textContent = \'⏳ 运行中...\';
+            runBtn.classList.add(\'running\');
+            runBtn.disabled = true;
+            
+            resultDisplay.innerHTML = \'🔄 正在处理...<br><small>请稍候</small>\';
+            
+            setTimeout(() => {
+                runBtn.textContent = \'▶️ 运行验证\';
+                runBtn.classList.remove(\'running\');
+                runBtn.disabled = false;
+                
+                resultDisplay.innerHTML = \'✅ 检测到3个缺陷<br><small>点击查看详情</small>\';
+                processingTime.textContent = \'120ms\';
+                memoryUsage.textContent = \'45MB\';
+                accuracy.textContent = \'94.2%\';
+                detectionDetails.innerHTML = \'发现3个划伤缺陷<br>平均置信度: 91.3%\';
+                
+                // 添加系统消息到聊天区
+                const chatArea = document.querySelector(\'.validation-layout .chat-area\');
+                const newMessage = document.createElement(\'div\');
+                newMessage.className = \'chat-message\';
+                newMessage.innerHTML = `\n                    <div class="message-bubble system">\n                        检测完成！发现3个缺陷区域。处理时间120ms，准确率94.2%。您可以框选区域进行调优。\n                    </div>\n                `;
+                chatArea.appendChild(newMessage);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 3000);
+        }
+
+        function applySuggestion(suggestionTitle) {
+            const chatArea = document.querySelector(\'.validation-layout .chat-area\');
+            const newMessage = document.createElement(\'div\');
+            newMessage.className = \'chat-message\';
+            newMessage.innerHTML = `\n                <div class="message-bubble system">\n                    已应用"${suggestionTitle}"优化，正在重新验证...\n                </div>\n            `;
+            chatArea.appendChild(newMessage);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            setTimeout(() => {
+                runValidation();
+            }, 1000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener(\'DOMContentLoaded\', function() {
+            console.log(\'工业视觉大模型智能平台原型已加载\');
+        });
+    </script>
+</body>
+</html>
+
